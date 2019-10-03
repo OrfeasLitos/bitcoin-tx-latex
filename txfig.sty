@@ -16,10 +16,10 @@
 
 % ------ functions - start ------------
 % ------ only affect inputs -----------
-\NewDocumentCommand{\setmaxlength}{mmmmm}{\setlength{#1}{
+\NewDocumentCommand{\maxlength}{mmmmm}{\setlength{#1}{
   {\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\maxof{\widthof{#4}}{\widthof{#5}}}}} / 2}}
 
-\NewDocumentCommand{\maxlength}{m>{\SplitArgument{3}{,}}m}{\setmaxlength{#1}#2}
+\NewDocumentCommand{\setmaxlength}{m>{\SplitArgument{3}{,}}m}{\maxlength{#1}#2}
 % ------- functions - end -------------
 
 % ------- draw nodes - start ----------
@@ -73,10 +73,10 @@
 % #3: outputs
 \def\btc(#1)(#2)(#3){
   \newlength{\txinoffset}
-  \maxlength{\txinoffset}{#2}
+  \setmaxlength{\txinoffset}{#2}
 
   \newlength{\txoutoffset}
-  \maxlength{\txoutoffset}{#3}
+  \setmaxlength{\txoutoffset}{#3}
 
   \newlength{\txboxhoffset}
   \setlength{\txboxhoffset}{\widthof{#1} / 2 + \txboxmargin}
