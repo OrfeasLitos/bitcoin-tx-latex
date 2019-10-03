@@ -3,11 +3,27 @@
 
 \ProvidesPackage{txfig}
 
+% ------- constants - start -----------
+\NewDocumentCommand{\inoutheight}{}{10}
+\NewDocumentCommand{\txboxmargin}{}{7}
+% -------- constants - end ------------
+
+% -- "make calc work" magic - start ---
 \ExplSyntaxOn
 \cs_new_eq:NN \calc \fp_eval:n
 \ExplSyntaxOff
+% --- "make calc work" magic - end ----
 
+% ------ functions - start ------------
+% ------ only affect inputs -----------
+\NewDocumentCommand{\setmaxlength}{mmmmm}{\setlength{#1}{
+  {\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\maxof{\widthof{#4}}{\widthof{#5}}}}} / 2}}
 
+\NewDocumentCommand{\maxlength}{m>{\SplitArgument{3}{,}}m}{\setmaxlength{#1}#2}
+% ------- functions - end -------------
+
+% ------- draw nodes - start ----------
+% put new positioned node
 % #1: position
 % #2: node name
 % #3: text string
@@ -30,9 +46,6 @@
   }
 }
 
-\NewDocumentCommand{\inoutheight}{}{10}
-\NewDocumentCommand{\txboxmargin}{}{7}
-
 \NewDocumentCommand{\drawinput}{mm}{
   \rput(\calc{-\txinoffset-\txboxhoffset}pt, \calc{\index - (0.5 * \inputsno) - \inoutheight/35}){#1}
   \rput(\calc{-\txinoffset-\txboxhoffset}pt, \calc{\index - (0.5 * \inputsno) - 3*\inoutheight/35}){#2}
@@ -43,11 +56,6 @@
 }
 \NewDocumentCommand{\prepareinput}{>{\SplitArgument{1}{,}}m}{\drawinput#1}
 
-\NewDocumentCommand{\setmaxlength}{mmmmm}{\setlength{#1}{
-  {\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\maxof{\widthof{#4}}{\widthof{#5}}}}} / 2}}
-
-\NewDocumentCommand{\maxlength}{m>{\SplitArgument{3}{,}}m}{\setmaxlength{#1}#2}
-
 \NewDocumentCommand{\drawoutput}{mm}{
   \rput(\calc{\txoutoffset+\txboxhoffset}pt, \calc{\index - (0.5 * \outputsno) - \inoutheight/35}){#1} % TODO: smarter y coordinates?
   \rput(\calc{\txoutoffset+\txboxhoffset}pt, \calc{\index - (0.5 * \outputsno) - 3*\inoutheight/35}){#2}
@@ -57,7 +65,9 @@
     {n_output_\index_from}{n_output_\index_to}
 }
 \NewDocumentCommand{\prepareoutput}{>{\SplitArgument{1}{,}}m}{\drawoutput#1}
+% -------- draw nodes - end -----------
 
+% -------- API ------------
 % #1: text inside box e.g. "tx name"
 % #2: inputs
 % #3: outputs
