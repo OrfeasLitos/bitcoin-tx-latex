@@ -19,3 +19,8 @@ needed by PSTricks. E.g.
 ```
 pdflatex --shell-escape example.tex
 ```
+
+#### Addendum
+
+(La)TeX is a horrible abomination that should be wiped clean from the face of
+earth.
