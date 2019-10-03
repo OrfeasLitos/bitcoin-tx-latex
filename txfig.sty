@@ -43,10 +43,10 @@
 }
 \NewDocumentCommand{\prepareinput}{>{\SplitArgument{1}{,}}m}{\drawinput#1}
 
-\NewDocumentCommand{\setmaxinlength}{mmmm}{\setlength{\txinoffset}{
-  {\maxof{\widthof{#1}}{\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\widthof{#4}}}}} / 2}}
+\NewDocumentCommand{\setmaxlength}{mmmmm}{\setlength{#1}{
+  {\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\maxof{\widthof{#4}}{\widthof{#5}}}}} / 2}}
 
-\NewDocumentCommand{\maxinlength}{>{\SplitArgument{3}{,}}m}{\setmaxinlength#1}
+\NewDocumentCommand{\maxlength}{m>{\SplitArgument{3}{,}}m}{\setmaxlength{#1}#2}
 
 \NewDocumentCommand{\drawoutput}{mm}{
   \rput(\calc{\txoutoffset+\txboxhoffset}pt, \calc{\index - (0.5 * \outputsno) - \inoutheight/35}){#1} % TODO: smarter y coordinates?
@@ -58,11 +58,6 @@
 }
 \NewDocumentCommand{\prepareoutput}{>{\SplitArgument{1}{,}}m}{\drawoutput#1}
 
-\NewDocumentCommand{\setmaxoutlength}{mmmm}{\setlength{\txoutoffset}{
-  {\maxof{\widthof{#1}}{\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\widthof{#4}}}}} / 2}}
-
-\NewDocumentCommand{\maxoutlength}{>{\SplitArgument{3}{,}}m}{\setmaxoutlength#1}
-
 \newlength{\maxinouts}
 \NewDocumentCommand{\setmaxinouts}{mm}{\setlength{\maxinouts}{\maxof{#1}{#2}}}
 
@@ -71,11 +66,11 @@
 % #3: outputs
 \def\btc(#1)(#2)(#3){
   \newlength{\txinoffset}
-  \maxinlength{#2}
+  \maxlength{\txinoffset}{#2}
 
   \newlength{\txoutoffset}
   %\setlength{\txoutoffset}{\maxof{\widthof{#3}}{\widthof{#4}} / 2 + \txarrowmargin}
-  \maxoutlength{#3}
+  \maxlength{\txoutoffset}{#3}
 
   \newlength{\txboxhoffset}
   \setlength{\txboxhoffset}{\widthof{#1} / 2 + \txboxmargin}
