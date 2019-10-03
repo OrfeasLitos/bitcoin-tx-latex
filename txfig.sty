@@ -58,9 +58,6 @@
 }
 \NewDocumentCommand{\prepareoutput}{>{\SplitArgument{1}{,}}m}{\drawoutput#1}
 
-\newlength{\maxinouts}
-\NewDocumentCommand{\setmaxinouts}{mm}{\setlength{\maxinouts}{\maxof{#1}{#2}}}
-
 % #1: text inside box e.g. "tx name"
 % #2: inputs
 % #3: outputs
@@ -75,13 +72,14 @@
   \newlength{\txboxhoffset}
   \setlength{\txboxhoffset}{\widthof{#1} / 2 + \txboxmargin}
 
-  \foreach \input [count=\outidx] in {#3} {
-    \gdef\outputsno{\outidx}
-  }
+  \newlength{\maxinouts}
   \foreach \input [count=\inidx] in {#2} {
     \gdef\inputsno{\inidx}
   }
-  \setmaxinouts{\inputsno}{\outputsno}
+  \foreach \input [count=\outidx] in {#3} {
+    \gdef\outputsno{\outidx}
+  }
+  \setlength{\maxinouts}{\maxof{\inputsno}{\outputsno}}
 
   \newlength{\txboxvoffset}
   \setlength{\txboxvoffset}{\calc{\maxinouts * \inoutheight} + \calc{3 * \txboxmargin}}
