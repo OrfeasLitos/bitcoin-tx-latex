@@ -66,26 +66,24 @@
 \newlength{\maxinouts}
 \NewDocumentCommand{\setmaxinouts}{mm}{\setlength{\maxinouts}{\maxof{#1}{#2}}}
 
-% #1: coordinates
-% #2: node name
-% #3: text inside box e.g. "tx name"
-% #4: inputs
-% #5: outputs
-\def\drawbox(#1)(#2)(#3)(#4)(#5){
+% #1: text inside box e.g. "tx name"
+% #2: inputs
+% #3: outputs
+\def\btc(#1)(#2)(#3){
   \newlength{\txinoffset}
-  \maxinlength{#4}
+  \maxinlength{#2}
 
   \newlength{\txoutoffset}
-  %\setlength{\txoutoffset}{\maxof{\widthof{#5}}{\widthof{#6}} / 2 + \txarrowmargin}
-  \maxoutlength{#5}
+  %\setlength{\txoutoffset}{\maxof{\widthof{#3}}{\widthof{#4}} / 2 + \txarrowmargin}
+  \maxoutlength{#3}
 
   \newlength{\txboxhoffset}
-  \setlength{\txboxhoffset}{\widthof{#3} / 2 + \txboxmargin}
+  \setlength{\txboxhoffset}{\widthof{#1} / 2 + \txboxmargin}
 
-  \foreach \input [count=\outidx] in {#5} {
+  \foreach \input [count=\outidx] in {#3} {
     \gdef\outputsno{\outidx}
   }
-  \foreach \input [count=\inidx] in {#4} {
+  \foreach \input [count=\inidx] in {#2} {
     \gdef\inputsno{\inidx}
   }
   \setmaxinouts{\inputsno}{\outputsno}
@@ -93,16 +91,16 @@
   \newlength{\txboxvoffset}
   \setlength{\txboxvoffset}{\calc{\maxinouts * \inoutheight} + \calc{3 * \txboxmargin}}
 
-  \rput(#1) {
-    \pnode{#2} {
+  \rput(0,0,0) {
+    \pnode{m_btc} {
       % inputs
-      \foreach \input [count=\index] in {#4} {
+      \foreach \input [count=\index] in {#2} {
         \expandafter\prepareinput\expandafter{\input}
       }
       % box
-      \textpolygon(0.0,0.0)(\txboxhoffset,\txboxvoffset)(white)(n_box)({#3})
+      \textpolygon(0.0,0.0)(\txboxhoffset,\txboxvoffset)(white)(n_box)({#1})
       % outputs
-      \foreach \output [count=\index] in {#5} {
+      \foreach \output [count=\index] in {#3} {
         \expandafter\prepareoutput\expandafter{\output}
       }
     }
