@@ -40,7 +40,7 @@
 % #5: text node name
 % #6: text string
 \def\textpolygon(#1,#2)(#3,#4)(#5)(#6)(#7) {
-  \rput(#1,#2) {
+  \rput(#1,#2){
     \pspolygon[fillstyle=solid,fillcolor=#5](-#3,-#4)(#3,-#4)(#3,#4)(-#3,#4)
     \pstext(0,0)(#6)(#7)
   }
@@ -93,8 +93,8 @@
   \newlength{\txboxvoffset}
   \setlength{\txboxvoffset}{\calc{\maxinouts * \inoutheight} + \calc{3 * \txboxmargin}}
 
-  \rput(0,0,0) {
-    \pnode{tx} {
+  \rput(0,0,0){
+    \pnode{tx}{
       % inputs
       \foreach \input [count=\index] in {#2} {
         \expandafter\prepareinput\expandafter{\input}
