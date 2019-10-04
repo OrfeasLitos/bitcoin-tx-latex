@@ -82,13 +82,13 @@
 \NewDocumentCommand{\drawInArrow}{}{
   \pstext{
     \calc{-\inHorOffset - \boxHorOffset - \arrtextmargin * 2}pt,
-    \calc{\inVertOffset - \txboxmargin - \baselineskip / 2 -
-      (\count + \arrowcorrection) * \baselineskip / 2}pt
+    \calc{\inVertOffset - \txboxmargin -
+      (\count + \arrowcorrection + 1) * \baselineskip}pt
   }{n_input_\arrindex_from}{$$}
   \pstext{
     -\boxHorOffset,
-    \calc{\inVertOffset - \txboxmargin - \baselineskip / 2 -
-      (\count + \arrowcorrection) * \baselineskip / 2}pt
+    \calc{\inVertOffset - \txboxmargin -
+      (\count + \arrowcorrection + 1) * \baselineskip}pt
   }{n_input_\arrindex_to}{$$}
   \ncline[nodesepA=0.0,nodesepB=0.0,arrowsize=4pt]{->}
     {n_input_\arrindex_from}{n_input_\arrindex_to}
@@ -103,8 +103,7 @@
       \foreach \line [count=\lineindex] in \blob {
         \rput(
           \calc{- \arrtextmargin - \inHorOffset / 2 - \boxHorOffset}pt,
-          \calc{\inVertOffset - \baselineskip / 2
-            - \txboxmargin - \count * \baselineskip / 2}pt
+          \calc{\inVertOffset - \txboxmargin - (\count + 1/2) * \baselineskip}pt
         ){\line}
         \ifthenelse{\blobindex=2}{
           \FPsub{\aux}{\arrowcorrection}{1}
@@ -113,25 +112,23 @@
         \FPadd{\aux}{\count}{1}
         \global\let\count\aux
       }
-      \FPadd{\aux}{\count}{1}
-      \global\let\count\aux
     }
-    \drawInArrow
-    \FPadd{\aux}{\count}{2}
+    \FPadd{\aux}{\count}{1}
     \global\let\count\aux
+    \drawInArrow
   }
 }
 
 \NewDocumentCommand{\drawOutArrow}{}{
   \pstext{
     \calc{\outHorOffset + \boxHorOffset + \arrtextmargin * 2}pt,
-    \calc{\outVertOffset - \txboxmargin - \baselineskip / 2 -
-      (\count + \arrowcorrection) * \baselineskip / 2}pt
+    \calc{\outVertOffset - \txboxmargin -
+      (\count + \arrowcorrection + 1) * \baselineskip}pt
   }{n_output_\arrindex_to}{$$}
   \pstext{
     \boxHorOffset,
-    \calc{\outVertOffset - \txboxmargin - \baselineskip / 2 -
-      (\count + \arrowcorrection) * \baselineskip / 2}pt
+    \calc{\outVertOffset - \txboxmargin -
+      (\count + \arrowcorrection + 1) * \baselineskip}pt
   }{n_output_\arrindex_from}{$$}
   \ncline[nodesepA=0.0,nodesepB=0.0,arrowsize=4pt]{->}
     {n_output_\arrindex_from}{n_output_\arrindex_to}
@@ -146,8 +143,7 @@
       \foreach \line [count=\lineindex] in \blob {
         \rput(
           \calc{\arrtextmargin + \outHorOffset / 2 + \boxHorOffset}pt,
-          \calc{\outVertOffset - \baselineskip / 2
-            - \txboxmargin - \count * \baselineskip / 2}pt
+          \calc{\outVertOffset - \txboxmargin - (\count + 1/2) * \baselineskip}pt
         ){\line}
         \ifthenelse{\blobindex=2}{
           \FPsub{\aux}{\arrowcorrection}{1}
@@ -156,12 +152,10 @@
         \FPadd{\aux}{\count}{1}
         \global\let\count\aux
       }
-      \FPadd{\aux}{\count}{1}
-      \global\let\count\aux
     }
-    \drawOutArrow
-    \FPadd{\aux}{\count}{2}
+    \FPadd{\aux}{\count}{1}
     \global\let\count\aux
+    \drawOutArrow
   }
 }
 % -------- draw nodes - end -----------
@@ -180,12 +174,12 @@
   \newlength{\boxHorOffset}
   \setlength{\boxHorOffset}{\widthof{#1} / 2 + \txboxmargin}
 
-  \FPset{\inLines}{0}
+  \FPset{\inlines}{0}
   \countLines{\inLines}{#2}
   \newlength{\inVertOffset}
   \setlength{\inVertOffset}{\offsetFromLines{\inLines}}
 
-  \FPset{\outLines}{0}
+  \FPset{\outlines}{0}
   \countLines{\outLines}{#3}
   \newlength{\outVertOffset}
   \setlength{\outVertOffset}{\offsetFromLines{\outLines}}
