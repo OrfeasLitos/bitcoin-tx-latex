@@ -4,7 +4,6 @@
 \ProvidesPackage{txfig}
 
 % ------- constants - start -----------
-\NewDocumentCommand{\inoutheight}{}{10}
 \NewDocumentCommand{\txboxmargin}{}{7}
 % -------- constants - end ------------
 
@@ -106,13 +105,13 @@
         ){\line}
         \ifthenelse{\blobindex=2}{
           \FPsub{\aux}{\arrowcorrection}{1}
-          \global\let\arrowcorrection\aux%
+          \global\let\arrowcorrection\aux
         }{}
         \FPadd{\aux}{\count}{1}
-        \global\let\count\aux%
+        \global\let\count\aux
       }
       \FPadd{\aux}{\count}{1}
-      \global\let\count\aux%
+      \global\let\count\aux
     }
     \drawInArrow
   }
@@ -146,13 +145,13 @@
         ){\line}
         \ifthenelse{\blobindex=2}{
           \FPsub{\aux}{\arrowcorrection}{1}
-          \global\let\arrowcorrection\aux%
+          \global\let\arrowcorrection\aux
         }{}
         \FPadd{\aux}{\count}{1}
-        \global\let\count\aux%
+        \global\let\count\aux
       }
       \FPadd{\aux}{\count}{1}
-      \global\let\count\aux%
+      \global\let\count\aux
     }
     \drawOutArrow
   }
