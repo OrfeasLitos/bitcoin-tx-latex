@@ -50,8 +50,10 @@
   \FPadd{#1}{#1}{2}
 }
 
-\NewDocumentCommand{\countLines}{mm}
-  {\forcsvlist{\countLinesOfArrow{#1}}{#2}}
+\NewDocumentCommand{\countLines}{mm}{
+  \forcsvlist{\countLinesOfArrow{#1}}{#2}
+  \FPsub{#1}{#1}{1}
+}
 % ------- functions - end -------------
 
 % ------- draw nodes - start ----------
@@ -92,7 +94,7 @@
 }
 
 \NewDocumentCommand{\drawInputs}{m}{
-  \gdef\count{0.5}
+  \gdef\count{1}
 
   \foreach \arrow [count=\arrindex] in {#1} {
     \gdef\arrowcorrection{-2}
@@ -113,8 +115,6 @@
       \global\let\count\aux%
     }
     \drawInArrow
-    \FPadd{\aux}{\count}{1}
-    \global\let\count\aux%
   }
 }
 
@@ -134,7 +134,7 @@
 }
 
 \NewDocumentCommand{\drawOutputs}{m}{
-  \gdef\count{0.5}
+  \gdef\count{1}
 
   \foreach \arrow [count=\arrindex] in {#1} {
     \gdef\arrowcorrection{-2}
@@ -155,8 +155,6 @@
       \global\let\count\aux%
     }
     \drawOutArrow
-    \FPadd{\aux}{\count}{1}
-    \global\let\count\aux%
   }
 }
 % -------- draw nodes - end -----------
