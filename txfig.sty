@@ -70,10 +70,10 @@
 % #4: rectangle color
 % #5: text node name
 % #6: text string
-\def\textpolygon(#1,#2)(#3,#4)(#5)(#6)(#7) {
-  \rput(#1,#2){
-    \pspolygon[fillstyle=solid,fillcolor=#5](-#3,-#4)(#3,-#4)(#3,#4)(-#3,#4)
-    \pstext{0,0}{#6}{#7}
+\NewDocumentCommand{\textpolygon}{mmmmm}{
+  \rput(0,0){
+    \pspolygon[fillstyle=solid,fillcolor=#3](-#1,-#2)(#1,-#2)(#1,#2)(-#1,#2)
+    \pstext{0,0}{#4}{#5}
   }
 }
 
@@ -162,7 +162,7 @@
 % #1: text inside box e.g. "tx name"
 % #2: inputs
 % #3: outputs
-\def\drawtx(#1)(#2)(#3){
+\NewDocumentCommand{\drawtx}{mmm}{
   \newlength{\inHorOffset}
   \setToMaxLength{\inHorOffset}{#2}
 
@@ -188,7 +188,7 @@
       % inputs
       \drawInputs{#2}
       % box
-      \textpolygon(0.0,0.0)(\boxHorOffset,\boxVertOffset)(white)(n_box)({#1})
+      \textpolygon{\boxHorOffset}{\boxVertOffset}{white}{n_box}{#1}
       % outputs
       \drawOutputs{#3}
     }
