@@ -5,6 +5,7 @@
 
 % ------- constants - start -----------
 \NewDocumentCommand{\txboxmargin}{}{7}
+\NewDocumentCommand{\arrtextmargin}{}{9}
 % -------- constants - end ------------
 
 % "make calc work" magic
@@ -79,7 +80,7 @@
 
 \NewDocumentCommand{\drawInArrow}{}{
   \pstext{
-    \calc{-\inHorOffset*2-\boxHorOffset}pt,
+    \calc{-\inHorOffset - \boxHorOffset - \arrtextmargin * 2}pt,
     \calc{\inVertOffset -
       (\count + \arrowcorrection) * \baselineskip}pt
   }{n_input_\arrindex_from}{$$}
@@ -100,7 +101,7 @@
     \foreach \blob [count=\blobindex] in \arrow {
       \foreach \line [count=\lineindex] in \blob {
         \rput(
-          \calc{-\inHorOffset - \boxHorOffset}pt,
+          \calc{- \arrtextmargin - \inHorOffset / 2 - \boxHorOffset}pt,
           \calc{\inVertOffset - \count * \baselineskip}pt
         ){\line}
         \ifthenelse{\blobindex=2}{
@@ -119,7 +120,7 @@
 
 \NewDocumentCommand{\drawOutArrow}{}{
   \pstext{
-    \calc{\outHorOffset*2 + \boxHorOffset}pt,
+    \calc{\outHorOffset + \boxHorOffset + \arrtextmargin * 2}pt,
     \calc{\outVertOffset -
       (\count + \arrowcorrection) * \baselineskip}pt
   }{n_output_\arrindex_to}{$$}
@@ -140,7 +141,7 @@
     \foreach \blob [count=\blobindex] in \arrow {
       \foreach \line [count=\lineindex] in \blob {
         \rput(
-          \calc{\outHorOffset + \boxHorOffset}pt,
+          \calc{\arrtextmargin + \outHorOffset / 2 + \boxHorOffset}pt,
           \calc{\outVertOffset - \count * \baselineskip}pt
         ){\line}
         \ifthenelse{\blobindex=2}{
