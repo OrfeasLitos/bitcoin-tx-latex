@@ -8,18 +8,50 @@
 \NewDocumentCommand{\txboxmargin}{}{7}
 % -------- constants - end ------------
 
-% -- "make calc work" magic - start ---
+% "make calc work" magic
 \ExplSyntaxOn
 \cs_new_eq:NN \calc \fp_eval:n
 \ExplSyntaxOff
-% --- "make calc work" magic - end ----
+
+% global set length magic
+% https://tex.stackexchange.com/questions/406015/defining-macro-gsetlength-as-global-setlength-reliable?noredirect=1&lq=1
+\makeatletter
+\gdef\gsetlength#1#2{%
+  \begingroup
+    \setlength\skip@{#2}% Local assignment to a scratch register.
+    \global#1=\skip@    % Global assignement to #1;
+                        % \relax is not necessary because of the following \endgroup.
+  \endgroup             % \skip@ is restored by end of group.
+}
+\makeatother
 
 % ------ functions - start ------------
 % ------ only affect inputs -----------
-\NewDocumentCommand{\maxlength}{mmmmm}{\setlength{#1}{
-  {\maxof{\widthof{#2}}{\maxof{\widthof{#3}}{\maxof{\widthof{#4}}{\widthof{#5}}}}} / 2}}
+\NewDocumentCommand{\offsetFromLines}{m}
+  {\calc{#1 * \baselineskip / 2} + \txboxmargin}
 
-\NewDocumentCommand{\setmaxlength}{m>{\SplitArgument{3}{,}}m}{\maxlength{#1}#2}
+\NewDocumentCommand{\setToMaxLength}{mm}{
+  \foreach \pair in {#2} {
+    \foreach \blob in \pair {
+      \foreach \line in \blob {
+        \gsetlength{#1}{\maxof{#1}{\widthof{\line}}}
+      }
+    }
+  }
+}
+
+\NewDocumentCommand{\addOne}{mm}{\FPadd{#1}{#1}{1}}
+
+\NewDocumentCommand{\countLinesOfBlob}{mm}
+  {\forcsvlist{\addOne{#1}}{#2}}
+
+\NewDocumentCommand{\countLinesOfArrow}{mm}{
+  \forcsvlist{\countLinesOfBlob{#1}}{#2}
+  \FPadd{#1}{#1}{2}
+}
+
+\NewDocumentCommand{\countLines}{mm}
+  {\forcsvlist{\countLinesOfArrow{#1}}{#2}}
 % ------- functions - end -------------
 
 % ------- draw nodes - start ----------
@@ -44,25 +76,57 @@
   }
 }
 
-\NewDocumentCommand{\drawinput}{mm}{
-  \rput(\calc{-\txinoffset-\txboxhoffset}pt, \calc{\index - (0.5 * \inputsno) - \inoutheight/35}){#1}
-  \rput(\calc{-\txinoffset-\txboxhoffset}pt, \calc{\index - (0.5 * \inputsno) - 3*\inoutheight/35}){#2}
-  \pstext{\calc{-\txinoffset*2-\txboxhoffset}pt, \calc{\index - (0.5 * \inputsno) - 2*\inoutheight/35}}{n_input_\index_from}{$$}
-  \pstext{-\txboxhoffset, \calc{\index - (0.5 * \inputsno) - 2*\inoutheight/35}}{n_input_\index_to}{$$}
+\NewDocumentCommand{\drawInArrow}{}{
+  \pstext{
+    \calc{-\inHorOffset*2-\boxHorOffset}pt,
+    \calc{\inVertOffset -
+      (\count + \arrowcorrection) * \baselineskip}pt
+  }{n_input_\arrindex_from}{$$}
+  \pstext{
+    -\boxHorOffset,
+    \calc{\inVertOffset -
+      (\count + \arrowcorrection) * \baselineskip}pt
+  }{n_input_\arrindex_to}{$$}
   \ncline[nodesepA=0.0,nodesepB=0.0,arrowsize=4pt]{->}
-    {n_input_\index_from}{n_input_\index_to}
+    {n_input_\arrindex_from}{n_input_\arrindex_to}
 }
-\NewDocumentCommand{\prepareinput}{>{\SplitArgument{1}{,}}m}{\drawinput#1}
+
+\NewDocumentCommand{\drawInputs}{m}{
+  \gdef\count{0.5}
+
+  \foreach \arrow [count=\arrindex] in {#1} {
+    \gdef\arrowcorrection{-2}
+    \foreach \blob [count=\blobindex] in \arrow {
+      \foreach \line [count=\lineindex] in \blob {
+        \rput(
+          \calc{-\inHorOffset - \boxHorOffset}pt,
+          \calc{\inVertOffset - \count * \baselineskip}pt
+        ){\line}
+        \ifthenelse{\blobindex=2}{
+          \FPsub{\aux}{\arrowcorrection}{1}
+          \global\let\arrowcorrection\aux%
+        }{}
+        \FPadd{\aux}{\count}{1}
+        \global\let\count\aux%
+      }
+      \FPadd{\aux}{\count}{1}
+      \global\let\count\aux%
+    }
+    \drawInArrow
+    \FPadd{\aux}{\count}{1}
+    \global\let\count\aux%
+  }
+}
 
 \NewDocumentCommand{\drawoutput}{mm}{
-  \rput(\calc{\txoutoffset+\txboxhoffset}pt, \calc{\index - (0.5 * \outputsno) - \inoutheight/35}){#1} % TODO: smarter y coordinates?
-  \rput(\calc{\txoutoffset+\txboxhoffset}pt, \calc{\index - (0.5 * \outputsno) - 3*\inoutheight/35}){#2}
-  \pstext{\txboxhoffset, \calc{\index - (0.5 * \outputsno) - 2*\inoutheight/35}}{n_output_\index_from}{$$}
-  \pstext{\calc{\txoutoffset*2+\txboxhoffset}pt, \calc{\index - (0.5 * \outputsno) - 2*\inoutheight/35}}{n_output_\index_to}{$$}
+  \rput(\calc{\outHorOffset+\boxHorOffset}pt, \calc{\index - (0.5 * \outputsno) - \inoutheight/35}){#1} % TODO: smarter y coordinates?
+  \rput(\calc{\outHorOffset+\boxHorOffset}pt, \calc{\index - (0.5 * \outputsno) - 3*\inoutheight/35}){#2}
+  \pstext{\boxHorOffset, \calc{\index - (0.5 * \outputsno) - 2*\inoutheight/35}}{n_output_\index_from}{$$}
+  \pstext{\calc{\outHorOffset*2+\boxHorOffset}pt, \calc{\index - (0.5 * \outputsno) - 2*\inoutheight/35}}{n_output_\index_to}{$$}
   \ncline[nodesepA=0.0,nodesepB=0.0,arrowsize=4pt]{->}
     {n_output_\index_from}{n_output_\index_to}
 }
-\NewDocumentCommand{\prepareoutput}{>{\SplitArgument{1}{,}}m}{\drawoutput#1}
+\NewDocumentCommand{\prepareoutput}{>{\SplitList{,}}m}{\drawoutput#1}
 % -------- draw nodes - end -----------
 
 % -------- API ------------
@@ -70,35 +134,36 @@
 % #2: inputs
 % #3: outputs
 \def\drawtx(#1)(#2)(#3){
-  \newlength{\txinoffset}
-  \setmaxlength{\txinoffset}{#2}
+  \newlength{\inHorOffset}
+  \setToMaxLength{\inHorOffset}{#2}
 
-  \newlength{\txoutoffset}
-  \setmaxlength{\txoutoffset}{#3}
+  \newlength{\outHorOffset}
+  \setToMaxLength{\outHorOffset}{#3}
 
-  \newlength{\txboxhoffset}
-  \setlength{\txboxhoffset}{\widthof{#1} / 2 + \txboxmargin}
+  \newlength{\boxHorOffset}
+  \setlength{\boxHorOffset}{\widthof{#1} / 2 + \txboxmargin}
 
-  \newlength{\maxinouts}
-  \foreach \input [count=\inidx] in {#2} {
-    \gdef\inputsno{\inidx}
-  }
+  \countLines{\inLines}{#2}
+  \newlength{\inVertOffset}
+  \setlength{\inVertOffset}{\offsetFromLines{\inLines}}
+
+  \countLines{\outLines}{#3}
+  \newlength{\outVertOffset}
+  \setlength{\outVertOffset}{\offsetFromLines{\outLines}}
+
+  \newlength{\boxVertOffset}
+  \setlength{\boxVertOffset}{\maxof{\inVertOffset}{\outVertOffset}}
+
   \foreach \input [count=\outidx] in {#3} {
-    \gdef\outputsno{\outidx}
+    \gdef\outputsno{\outidx} %TODO: remove
   }
-  \setlength{\maxinouts}{\maxof{\inputsno}{\outputsno}}
-
-  \newlength{\txboxvoffset}
-  \setlength{\txboxvoffset}{\calc{\maxinouts * \inoutheight} + \calc{3 * \txboxmargin}}
 
   \rput(0,0,0){
     \pnode{tx}{
       % inputs
-      \foreach \input [count=\index] in {#2} {
-        \expandafter\prepareinput\expandafter{\input}
-      }
+      \drawInputs{#2}
       % box
-      \textpolygon(0.0,0.0)(\txboxhoffset,\txboxvoffset)(white)(n_box)({#1})
+      \textpolygon(0.0,0.0)(\boxHorOffset,\boxVertOffset)(white)(n_box)({#1})
       % outputs
       \foreach \output [count=\index] in {#3} {
         \expandafter\prepareoutput\expandafter{\output}
