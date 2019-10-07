@@ -1,8 +1,8 @@
-all: example.pdf
+all: full.pdf
 
-example.pdf: example.tex txfig.sty
-	pdflatex --shell-escape example.tex
-	rm -f example{.aux,.log,-pics.pdf}
+full.pdf: examples/full.tex txfig.sty
+	pdflatex --shell-escape examples/full.tex
+	rm -f full{.aux,.log,-pics.pdf}
 
 clear:
 	rm -f *{.aux,.log,.pdf}
